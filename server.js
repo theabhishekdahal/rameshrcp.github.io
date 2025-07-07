@@ -3,15 +3,41 @@ const cors = require('cors');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Simple admin authentication (in production, use proper auth with bcrypt)
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+const SESSION_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+
+// In-memory session store (in production, use Redis or database)
+const sessions = new Map();
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
+
+// Session middleware
+app.use((req, res, next) => {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  if (sessionId && sessions.has(sessionId)) {
+    req.user = sessions.get(sessionId);
+  }
+  next();
+});
+
+// Authentication middleware
+const requireAuth = (req, res, next) => {
+  if (!req.user || !req.user.isAdmin) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+  next();
+};
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -54,6 +80,159 @@ if (!fs.existsSync(dataDir)) {
 
 // API Routes
 
+// Authentication routes
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    const sessionId = crypto.randomBytes(32).toString('hex');
+    const user = { username, isAdmin: true, sessionId };
+    sessions.set(sessionId, user);
+    
+    res.json({ 
+      success: true, 
+      user: { username, isAdmin: true }, 
+      sessionId 
+    });
+  } else {
+    res.status(401).json({ error: 'Invalid credentials' });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  if (sessionId && sessions.has(sessionId)) {
+    sessions.delete(sessionId);
+  }
+  res.json({ success: true });
+});
+
+app.get('/api/auth/me', (req, res) => {
+  if (req.user) {
+    res.json({ user: { username: req.user.username, isAdmin: req.user.isAdmin } });
+  } else {
+    res.status(401).json({ error: 'Not authenticated' });
+  }
+});
+
+// Blog routes
+app.get('/api/blog', (req, res) => {
+  try {
+    const blogPath = path.join(dataDir, 'blog.json');
+    if (fs.existsSync(blogPath)) {
+      const blogs = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+      // Sort by date descending
+      blogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+      res.json(blogs);
+    } else {
+      res.json([]);
+    }
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve blog posts' });
+  }
+});
+
+app.post('/api/blog', requireAuth, (req, res) => {
+  try {
+    const blogPath = path.join(dataDir, 'blog.json');
+    let blogs = [];
+    
+    if (fs.existsSync(blogPath)) {
+      blogs = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+    }
+    
+    const newPost = {
+      id: Date.now().toString(),
+      title: req.body.title,
+      content: req.body.content,
+      excerpt: req.body.excerpt || req.body.content.substring(0, 150) + '...',
+      author: req.user.username,
+      date: new Date().toISOString(),
+      published: req.body.published || false,
+      tags: req.body.tags || []
+    };
+    
+    blogs.unshift(newPost);
+    fs.writeFileSync(blogPath, JSON.stringify(blogs, null, 2));
+    
+    res.json(newPost);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create blog post' });
+  }
+});
+
+app.put('/api/blog/:id', requireAuth, (req, res) => {
+  try {
+    const blogPath = path.join(dataDir, 'blog.json');
+    if (!fs.existsSync(blogPath)) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    const blogs = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+    const postIndex = blogs.findIndex(post => post.id === req.params.id);
+    
+    if (postIndex === -1) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    blogs[postIndex] = {
+      ...blogs[postIndex],
+      title: req.body.title || blogs[postIndex].title,
+      content: req.body.content || blogs[postIndex].content,
+      excerpt: req.body.excerpt || req.body.content?.substring(0, 150) + '...' || blogs[postIndex].excerpt,
+      published: req.body.published !== undefined ? req.body.published : blogs[postIndex].published,
+      tags: req.body.tags || blogs[postIndex].tags,
+      lastModified: new Date().toISOString()
+    };
+    
+    fs.writeFileSync(blogPath, JSON.stringify(blogs, null, 2));
+    res.json(blogs[postIndex]);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update blog post' });
+  }
+});
+
+app.delete('/api/blog/:id', requireAuth, (req, res) => {
+  try {
+    const blogPath = path.join(dataDir, 'blog.json');
+    if (!fs.existsSync(blogPath)) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    const blogs = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+    const filteredBlogs = blogs.filter(post => post.id !== req.params.id);
+    
+    if (filteredBlogs.length === blogs.length) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    fs.writeFileSync(blogPath, JSON.stringify(filteredBlogs, null, 2));
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete blog post' });
+  }
+});
+
+app.get('/api/blog/:id', (req, res) => {
+  try {
+    const blogPath = path.join(dataDir, 'blog.json');
+    if (!fs.existsSync(blogPath)) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    const blogs = JSON.parse(fs.readFileSync(blogPath, 'utf8'));
+    const post = blogs.find(post => post.id === req.params.id);
+    
+    if (!post) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to retrieve blog post' });
+  }
+});
+
 // Get productivity data
 app.get('/api/productivity-data', (req, res) => {
   try {
@@ -78,7 +257,7 @@ app.get('/api/productivity-data', (req, res) => {
 });
 
 // Update productivity data
-app.post('/api/productivity-data', (req, res) => {
+app.post('/api/productivity-data', requireAuth, (req, res) => {
   try {
     const dataPath = path.join(dataDir, 'productivity.json');
     const data = { ...req.body, lastUpdated: new Date().toISOString() };
@@ -90,7 +269,7 @@ app.post('/api/productivity-data', (req, res) => {
 });
 
 // Upload journal photo
-app.post('/api/upload-journal-photo', upload.single('photo'), (req, res) => {
+app.post('/api/upload-journal-photo', requireAuth, upload.single('photo'), (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No photo uploaded' });
@@ -128,7 +307,7 @@ app.post('/api/upload-journal-photo', upload.single('photo'), (req, res) => {
 });
 
 // Delete journal photo
-app.delete('/api/journal-photo/:filename', (req, res) => {
+app.delete('/api/journal-photo/:filename', requireAuth, (req, res) => {
   try {
     const filename = req.params.filename;
     const filePath = path.join(uploadsDir, filename);
@@ -170,7 +349,7 @@ app.get('/api/books', (req, res) => {
   }
 });
 
-app.post('/api/books', (req, res) => {
+app.post('/api/books', requireAuth, (req, res) => {
   try {
     const dataPath = path.join(dataDir, 'productivity.json');
     let data = {};

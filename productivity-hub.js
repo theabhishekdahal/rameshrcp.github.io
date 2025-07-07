@@ -7,15 +7,172 @@ class ProductivityHub {
       journalPhotos: [],
       notionTasks: []
     };
+    this.blogPosts = [];
     this.editMode = false;
+    this.user = null;
+    this.sessionId = localStorage.getItem('sessionId');
     this.init();
   }
 
   async init() {
+    await this.checkAuth();
     await this.loadData();
+    await this.loadBlogPosts();
     this.setupEventListeners();
     this.setupDragAndDrop();
     this.renderDashboard();
+    this.renderBlogPosts();
+    this.updateAuthUI();
+  }
+
+  async checkAuth() {
+    if (this.sessionId) {
+      try {
+        const response = await fetch('/api/auth/me', {
+          headers: {
+            'Authorization': `Bearer ${this.sessionId}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          this.user = data.user;
+        } else {
+          this.sessionId = null;
+          localStorage.removeItem('sessionId');
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        this.sessionId = null;
+        localStorage.removeItem('sessionId');
+      }
+    }
+  }
+
+  async login(username, password) {
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        this.user = data.user;
+        this.sessionId = data.sessionId;
+        localStorage.setItem('sessionId', this.sessionId);
+        this.updateAuthUI();
+        return true;
+      } else {
+        const error = await response.json();
+        throw new Error(error.error);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error;
+    }
+  }
+
+  async logout() {
+    try {
+      if (this.sessionId) {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${this.sessionId}`
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      this.user = null;
+      this.sessionId = null;
+      localStorage.removeItem('sessionId');
+      this.updateAuthUI();
+      this.editMode = false;
+      this.toggleEditMode();
+    }
+  }
+
+  updateAuthUI() {
+    const loginBtn = document.getElementById('login-btn');
+    const editBtn = document.getElementById('edit-mode-btn');
+    const addBlogBtn = document.getElementById('add-blog-btn');
+    
+    if (this.user && this.user.isAdmin) {
+      loginBtn.textContent = 'Logout';
+      editBtn.style.display = 'inline-block';
+      addBlogBtn.style.display = 'inline-block';
+    } else {
+      loginBtn.textContent = 'Login';
+      editBtn.style.display = 'none';
+      addBlogBtn.style.display = 'none';
+    }
+  }
+
+  async loadBlogPosts() {
+    try {
+      const response = await fetch('/api/blog');
+      if (response.ok) {
+        this.blogPosts = await response.json();
+      }
+    } catch (error) {
+      console.error('Failed to load blog posts:', error);
+    }
+  }
+
+  async saveBlogPost(postData, isEdit = false, postId = null) {
+    try {
+      const url = isEdit ? `/api/blog/${postId}` : '/api/blog';
+      const method = isEdit ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.sessionId}`
+        },
+        body: JSON.stringify(postData)
+      });
+      
+      if (response.ok) {
+        await this.loadBlogPosts();
+        this.renderBlogPosts();
+        return true;
+      } else {
+        const error = await response.json();
+        throw new Error(error.error);
+      }
+    } catch (error) {
+      console.error('Failed to save blog post:', error);
+      throw error;
+    }
+  }
+
+  async deleteBlogPost(postId) {
+    try {
+      const response = await fetch(`/api/blog/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this.sessionId}`
+        }
+      });
+      
+      if (response.ok) {
+        await this.loadBlogPosts();
+        this.renderBlogPosts();
+        return true;
+      } else {
+        const error = await response.json();
+        throw new Error(error.error);
+      }
+    } catch (error) {
+      console.error('Failed to delete blog post:', error);
+      throw error;
+    }
   }
 
   async loadData() {
@@ -35,6 +192,7 @@ class ProductivityHub {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.sessionId}`
         },
         body: JSON.stringify(this.data)
       });
@@ -57,6 +215,41 @@ class ProductivityHub {
     const themeBtn = document.getElementById('theme-toggle');
     if (themeBtn) {
       themeBtn.addEventListener('click', () => this.toggleTheme());
+    }
+
+    // Login/Logout button
+    const loginBtn = document.getElementById('login-btn');
+    if (loginBtn) {
+      loginBtn.addEventListener('click', () => {
+        if (this.user) {
+          this.logout();
+        } else {
+          document.getElementById('login-modal').style.display = 'block';
+        }
+      });
+    }
+
+    // Login form
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+    }
+
+    // Blog post form
+    const blogForm = document.getElementById('blog-post-form');
+    if (blogForm) {
+      blogForm.addEventListener('submit', (e) => this.handleBlogPost(e));
+    }
+
+    // Add blog post button
+    const addBlogBtn = document.getElementById('add-blog-btn');
+    if (addBlogBtn) {
+      addBlogBtn.addEventListener('click', () => {
+        document.getElementById('blog-modal-title').textContent = 'New Blog Post';
+        document.getElementById('blog-post-form').reset();
+        document.getElementById('blog-post-form').dataset.editId = '';
+        document.getElementById('blog-post-modal').style.display = 'block';
+      });
     }
 
     // Journal photo upload
@@ -189,6 +382,9 @@ class ProductivityHub {
     try {
       const response = await fetch('/api/upload-journal-photo', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.sessionId}`
+        },
         body: formData
       });
 
@@ -218,6 +414,7 @@ class ProductivityHub {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.sessionId}`
         },
         body: JSON.stringify(bookData)
       });
@@ -309,7 +506,10 @@ class ProductivityHub {
 
     try {
       const response = await fetch(`/api/journal-photo/${filename}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${this.sessionId}`
+        }
       });
 
       if (response.ok) {
@@ -318,6 +518,123 @@ class ProductivityHub {
       }
     } catch (error) {
       console.error('Failed to delete journal photo:', error);
+    }
+  }
+
+  async handleLogin(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const username = formData.get('username');
+    const password = formData.get('password');
+
+    try {
+      await this.login(username, password);
+      document.getElementById('login-modal').style.display = 'none';
+      e.target.reset();
+    } catch (error) {
+      alert('Login failed: ' + error.message);
+    }
+  }
+
+  async handleBlogPost(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const editId = e.target.dataset.editId;
+    
+    // Parse tags
+    const tagsString = formData.get('tags') || '';
+    const tags = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag);
+    
+    const postData = {
+      title: formData.get('title'),
+      content: formData.get('content'),
+      excerpt: formData.get('excerpt'),
+      tags: tags,
+      published: formData.get('published') === 'on'
+    };
+
+    try {
+      if (editId) {
+        await this.saveBlogPost(postData, true, editId);
+      } else {
+        await this.saveBlogPost(postData);
+      }
+      document.getElementById('blog-post-modal').style.display = 'none';
+      e.target.reset();
+    } catch (error) {
+      alert('Failed to save blog post: ' + error.message);
+    }
+  }
+
+  renderBlogPosts() {
+    const blogContainer = document.getElementById('blog-posts');
+    if (!blogContainer) return;
+
+    if (this.blogPosts.length === 0) {
+      blogContainer.innerHTML = '<p class="no-posts">No blog posts yet. Come back later!</p>';
+      return;
+    }
+
+    blogContainer.innerHTML = this.blogPosts.map(post => `
+      <article class="blog-post">
+        <div class="blog-post-header">
+          <div>
+            <h3 class="blog-post-title">${post.title}</h3>
+            <div class="blog-post-meta">
+              <span>By ${post.author}</span>
+              <span>•</span>
+              <span>${new Date(post.date).toLocaleDateString()}</span>
+              <span>•</span>
+              <div class="blog-post-status">
+                <span class="status-indicator ${post.published ? '' : 'draft'}"></span>
+                <span>${post.published ? 'Published' : 'Draft'}</span>
+              </div>
+            </div>
+          </div>
+          ${this.user && this.user.isAdmin ? `
+            <div class="blog-post-actions">
+              <button onclick="window.hub.editBlogPost('${post.id}')">Edit</button>
+              <button class="danger" onclick="window.hub.deleteBlogPostConfirm('${post.id}')">Delete</button>
+            </div>
+          ` : ''}
+        </div>
+        
+        ${post.excerpt ? `
+          <div class="blog-post-excerpt">${post.excerpt}</div>
+        ` : ''}
+        
+        <div class="blog-post-content">${post.content}</div>
+        
+        ${post.tags && post.tags.length > 0 ? `
+          <div class="blog-post-tags">
+            ${post.tags.map(tag => `<span class="blog-tag">${tag}</span>`).join('')}
+          </div>
+        ` : ''}
+      </article>
+    `).join('');
+  }
+
+  editBlogPost(postId) {
+    const post = this.blogPosts.find(p => p.id === postId);
+    if (!post) return;
+
+    document.getElementById('blog-modal-title').textContent = 'Edit Blog Post';
+    document.getElementById('blog-title').value = post.title;
+    document.getElementById('blog-excerpt').value = post.excerpt || '';
+    document.getElementById('blog-content').value = post.content;
+    document.getElementById('blog-tags').value = post.tags ? post.tags.join(', ') : '';
+    document.getElementById('blog-published').checked = post.published;
+    document.getElementById('blog-post-form').dataset.editId = postId;
+    document.getElementById('blog-post-modal').style.display = 'block';
+  }
+
+  async deleteBlogPostConfirm(postId) {
+    if (confirm('Are you sure you want to delete this blog post?')) {
+      try {
+        await this.deleteBlogPost(postId);
+      } catch (error) {
+        alert('Failed to delete blog post: ' + error.message);
+      }
     }
   }
 }

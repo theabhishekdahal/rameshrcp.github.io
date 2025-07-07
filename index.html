@@ -20,6 +20,7 @@
                 <ul class="nav-menu">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#dashboard">Dashboard</a></li>
+                    <li><a href="#blog">Blog</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
@@ -30,7 +31,8 @@
                             <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
                         </svg>
                     </button>
-                    <button id="edit-mode-btn" class="control-btn">Edit Layout</button>
+                    <button id="login-btn" class="control-btn">Login</button>
+                    <button id="edit-mode-btn" class="control-btn" style="display: none;">Edit Layout</button>
                 </div>
             </div>
         </nav>
@@ -210,6 +212,24 @@
             </div>
         </section>
 
+        <section id="blog" class="blog-section">
+            <div class="container">
+                <div class="blog-header">
+                    <h2 class="section-title">Blog</h2>
+                    <button id="add-blog-btn" class="btn btn-primary" style="display: none;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        New Post
+                    </button>
+                </div>
+                <div id="blog-posts" class="blog-posts">
+                    <!-- Blog posts will be rendered here -->
+                </div>
+            </div>
+        </section>
+
         <section id="about" class="about">
             <div class="container">
                 <h2 class="section-title">About Me</h2>
@@ -310,6 +330,68 @@
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="document.getElementById('add-book-modal').style.display='none'">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Book</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Admin Login</h3>
+                <button class="close-btn" onclick="document.getElementById('login-modal').style.display='none'">&times;</button>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('login-modal').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Blog Post Modal -->
+    <div id="blog-post-modal" class="modal" style="display: none;">
+        <div class="modal-content blog-modal">
+            <div class="modal-header">
+                <h3 id="blog-modal-title">New Blog Post</h3>
+                <button class="close-btn" onclick="document.getElementById('blog-post-modal').style.display='none'">&times;</button>
+            </div>
+            <form id="blog-post-form">
+                <div class="form-group">
+                    <label for="blog-title">Title</label>
+                    <input type="text" id="blog-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="blog-excerpt">Excerpt (optional)</label>
+                    <textarea id="blog-excerpt" name="excerpt" rows="2" placeholder="Brief description of the post..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="blog-content">Content</label>
+                    <textarea id="blog-content" name="content" rows="10" required placeholder="Write your blog post here..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="blog-tags">Tags (comma separated)</label>
+                    <input type="text" id="blog-tags" name="tags" placeholder="technology, productivity, personal">
+                </div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="blog-published" name="published">
+                        <span>Publish immediately</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('blog-post-modal').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Post</button>
                 </div>
             </form>
         </div>
