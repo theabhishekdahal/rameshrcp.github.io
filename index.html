@@ -1,119 +1,136 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Abhishek Dahal - Personal Website</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Abhishek Dahal | Aspiring Chartered Accountant</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <meta name="description" content="Portfolio of Abhishek Dahal, an aspiring Chartered Accountant with a passion for finance, auditing, and graphic design. Explore my skills and experience.">
+    <meta name="keywords" content="Abhishek Dahal, Chartered Accountant, ICAN, Finance, Auditing, Skills, Portfolio, Nepal, Excel, Tally, QuickBooks, InDesign">
+    <meta name="author" content="Abhishek Dahal">
+
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #0a192f;
+            --primary-color: #64ffda;
+            --white-color: #edeef7;
+            --light-text: #e6f1ff; 
+            --dark-text: #a8b2d1;
+            --light-navy: #112240;
+            --slate: #8892b0;
+            --mouse-x: 50%;
+            --mouse-y: 50%;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--dark-text);
+            font-family: 'Inter', sans-serif;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(
+                600px circle at var(--mouse-x) var(--mouse-y),
+                rgba(42, 67, 101, 0.3),
+                transparent 80%
+            );
+            z-index: -1;
+            pointer-events: none;
+        }
+        .nav-link.active .nav-indicator, .group:hover .nav-indicator { width: 64px; background-color: var(--white-color); }
+        .nav-link.active .nav-text, .group:hover .nav-text { color: var(--white-color); }
+        .main-section { scroll-margin-top: 100px; }
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s cubic-bezier(0.33, 1, 0.68, 1), transform 0.6s cubic-bezier(0.33, 1, 0.68, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .font-century-gothic { font-family: "Century Gothic", "Futura", sans-serif; }
+        .skill-pill { background-color: var(--light-navy); color: var(--primary-color); font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; }
+        .skill-pill:hover { transform: scale(1.05); transition: transform 0.2s ease-in-out; }
+        .text-nav { font-size: 0.6875rem; line-height: 1rem; }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-10px); } 60% { transform: translateY(-5px); } }
+        .scroll-down-arrow { animation: bounce 2s infinite; }
+        .impact-name { letter-spacing: -0.06em; }
+        .glass-panel::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+            border-radius: 0.5rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .glass-hover { border-radius: 0.5rem; transition: background-color 0.3s ease, backdrop-filter 0.3s ease; }
+        li:hover .glass-hover {
+            background-color: rgba(42, 67, 101, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.075);
+        }
+        li:hover .glass-panel::after { opacity: 1; }
+    </style>
 </head>
-<body>
-    <header>
-        <nav class="navbar">
-            <div class="nav-container">
-                <div class="nav-logo">
-                    <h2>Abhishek Dahal</h2>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
+<body class="text-base">
+    <div class="lg:flex min-h-screen">
+        <aside class="hidden lg:flex flex-col w-1/3 p-12 lg:py-24 lg:px-12 xl:p-24 fixed h-full">
+            <div id="sidebar-header" class="mb-10"></div>
+            <div id="social-links-container" class="mt-auto flex items-center space-x-6"></div>
+        </aside>
+        <main class="lg:w-[58%] lg:ml-[42%] px-6 sm:px-12 md:pl-24 md:pr-12 lg:pr-16 pt-12 pb-20 lg:py-20">
+            <div class="max-w-4xl mx-auto">
+                <div id="mobile-page-header" class="lg:hidden mb-12"></div>
+                <section id="about" class="main-section min-h-screen flex flex-col justify-center mb-12 lg:mb-16"></section>
+                <section id="experience" class="main-section mb-12 lg:mb-16"></section>
+                <section id="skills" class="main-section mb-12 lg:mb-16"></section>
+                <section id="education" class="main-section mb-12 lg:mb-16"></section>
+                <section id="awards" class="main-section mb-12 lg:mb-16"></section>
+                <section id="contact" class="main-section text-center mt-32 lg:mt-48"></section>
+                <footer id="footer" class="text-center text-xs text-slate mt-24 reveal"></footer>
             </div>
-        </nav>
-    </header>
-
-    <main>
-        <section id="home" class="hero">
-            <div class="hero-container">
-                <div class="hero-content">
-                    <h1 class="hero-title">Hello, I'm <span class="highlight">Abhishek Dahal</span></h1>
-                    <p class="hero-subtitle">Software Developer & Technology Enthusiast</p>
-                    <p class="hero-description">
-                        Welcome to my personal website. I'm passionate about creating innovative solutions 
-                        and building meaningful digital experiences.
-                    </p>
-                    <div class="hero-buttons">
-                        <a href="#about" class="btn btn-primary">Learn More</a>
-                        <a href="#contact" class="btn btn-secondary">Get In Touch</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="about">
-            <div class="container">
-                <h2 class="section-title">About Me</h2>
-                <div class="about-content">
-                    <div class="about-text">
-                        <p>
-                            I'm a passionate software developer with a love for creating innovative solutions 
-                            and building meaningful digital experiences. I enjoy working with modern technologies 
-                            and constantly learning new skills to stay current in the ever-evolving tech landscape.
-                        </p>
-                        <p>
-                            My interests span across various domains including web development, software engineering, 
-                            and emerging technologies. I believe in writing clean, efficient code and creating 
-                            user-friendly applications that make a positive impact.
-                        </p>
-                        <div class="skills">
-                            <h3>Skills & Interests</h3>
-                            <div class="skill-tags">
-                                <span class="skill-tag">JavaScript</span>
-                                <span class="skill-tag">Python</span>
-                                <span class="skill-tag">React</span>
-                                <span class="skill-tag">Node.js</span>
-                                <span class="skill-tag">Web Development</span>
-                                <span class="skill-tag">Software Engineering</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2 class="section-title">Get In Touch</h2>
-                <div class="contact-content">
-                    <p class="contact-description">
-                        I'm always interested in connecting with like-minded individuals and exploring new opportunities. 
-                        Feel free to reach out!
-                    </p>
-                    <div class="contact-links">
-                        <a href="mailto:contact@abhishekdahal.me" class="contact-link">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                            Email Me
-                        </a>
-                        <a href="https://github.com/rameshrcp" target="_blank" class="contact-link">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-                            </svg>
-                            GitHub
-                        </a>
-                        <a href="https://linkedin.com/in/abhishekdahal" target="_blank" class="contact-link">
-                            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
-                                <rect x="2" y="9" width="4" height="12"></rect>
-                                <circle cx="4" cy="4" r="2"></circle>
-                            </svg>
-                            LinkedIn
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Abhishek Dahal. All rights reserved.</p>
-        </div>
-    </footer>
+        </main>
+    </div>
+    <script src="data.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const socialLinksHTML = portfolioData.socials.map(s => `<a href="${s.url}" target="_blank" rel="noopener noreferrer" class="text-slate transition-colors hover:text-[color:var(--white-color)]" aria-label="${s.name}">${s.icon}</a>`).join('');
+        const mobilePageHeaderHTML = `<h1 class="text-4xl font-bold text-[color:var(--white-color)]">${portfolioData.name}</h1><h2 class="mt-3 text-lg font-bold text-slate tracking-tight whitespace-nowrap">${portfolioData.title}</h2><p class="mt-4 max-w-xs text-slate">${portfolioData.bio}</p><div class="mt-8 flex items-center space-x-6">${socialLinksHTML}</div>`;
+        document.getElementById('mobile-page-header').innerHTML = mobilePageHeaderHTML;
+        const sidebarNavHTML = portfolioData.navigation.map(n => { const isExternal = n.type === 'external'; const target = isExternal ? 'target="_blank" rel="noopener noreferrer"' : ''; const linkClass = isExternal ? 'group flex items-center py-2' : 'nav-link group flex items-center py-2'; return `<li><a href="${n.href}" class="${linkClass}" ${target}><span class="nav-indicator mr-4 h-0.5 w-8 bg-slate-600 transition-all duration-300"></span><span class="nav-text text-nav font-bold uppercase tracking-widest text-slate">${n.name}</span></a></li>`; }).join('');
+        const sidebarHeaderHTML = `<div><a href="#"><h1 class="impact-name text-5xl font-bold text-[color:var(--white-color)] whitespace-nowrap hover:text-[color:var(--white-color)] transition-colors">${portfolioData.name}</h1></a><h2 class="mt-3 text-lg font-bold text-[color:var(--white-color)] tracking-tight whitespace-nowrap">${portfolioData.title}</h2><p class="mt-4 max-w-xs text-slate">${portfolioData.bio}</p><nav class="mt-10"><ul class="space-y-1">${sidebarNavHTML}</ul></nav></div>`;
+        document.getElementById('sidebar-header').innerHTML = sidebarHeaderHTML;
+        document.getElementById('social-links-container').innerHTML = socialLinksHTML;
+        document.getElementById('about').innerHTML = `<div class="reveal flex flex-col h-full"><div>${portfolioData.about.map(p => `<p class="mb-4 text-base text-slate">${p}</p>`).join('')}</div><div class="mt-auto pt-10 text-center"><a href="#experience" class="inline-block text-slate hover:text-primary-color scroll-down-arrow"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5" /></svg></a></div></div>`;
+        const createStyledPill = (text) => `<li class="skill-pill">${text}</li>`;
+        const createContentEntryHTML = (item) => `<li class="mb-6"><div class="group relative grid transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/list:opacity-50 glass-hover glass-panel p-4"><div class="z-10 sm:col-span-2"><p class="font-century-gothic text-sm font-bold text-slate mb-2 mt-1">${item.date}</p>${item.images && item.images.length > 0 ? `<div class="mt-3 flex flex-col gap-4">${item.images.map(img => `<a href="${img.src}" target="_blank"><img src="${img.src}" alt="${img.alt}" class="rounded border border-slate-200/10 transition group-hover:border-slate-200/30 w-full" style="max-width: 120px;"></a>`).join('')}</div>` : ''}</div><div class="z-10 sm:col-span-6"><h3 class="font-medium leading-snug text-slate-200"><span class="inline-block text-lg font-bold text-[color:var(--white-color)] group-hover:text-[color:var(--primary-color)] transition-colors duration-300">${item.institution}</span></h3><p class="text-md font-medium text-primary-color">${item.title}</p>${item.duties ? `<p class="mt-2 text-sm text-dark-text">${item.duties}</p>` : ''}${item.skills ? `<ul class="mt-4 flex flex-wrap gap-2">${item.skills.map(createStyledPill).join('')}</ul>` : ''}</div></div></li>`;
+        const createAwardEntryHTML = (item) => `<li class="mb-6"><div class="group relative grid transition-all sm:grid-cols-8 sm:gap-8 md:gap-4 lg:hover:!opacity-100 lg:group-hover/list:opacity-50 glass-hover glass-panel p-4"><p class="z-10 sm:col-span-2 font-century-gothic text-sm font-bold text-slate mb-2 mt-1">${item.date}</p><div class="z-10 sm:col-span-6"><h3 class="font-medium leading-snug text-slate-200"><span class="inline-block text-lg font-bold text-[color:var(--white-color)] group-hover:text-[color:var(--primary-color)] transition-colors duration-300">${item.title}</span></h3><p class="text-md font-medium text-primary-color">${item.institution}</p>${item.duties ? `<p class="mt-2 text-sm text-dark-text">${item.duties}</p>` : ''}</div></div></li>`;
+        document.getElementById('experience').innerHTML = `<div class="reveal"><h2 class="text-sm font-bold uppercase tracking-widest text-light-text transition-colors hover:text-[color:var(--white-color)] mb-8">Experience</h2></div><ul class="group/list">${portfolioData.experience.map(createContentEntryHTML).join('')}</ul>`;
+        document.getElementById('education').innerHTML = `<div class="reveal"><h2 class="text-sm font-bold uppercase tracking-widest text-light-text transition-colors hover:text-[color:var(--white-color)] mb-8">Education</h2></div><ul class="group/list">${portfolioData.education.map(createContentEntryHTML).join('')}</ul>`;
+        document.getElementById('awards').innerHTML = `<div class="reveal"><h2 class="text-sm font-bold uppercase tracking-widest text-light-text transition-colors hover:text-[color:var(--white-color)] mb-8">Honors and Awards</h2></div><ul class="group/list">${portfolioData.awards.map(createAwardEntryHTML).join('')}</ul>`;
+        const skillsHTML = `<div class="reveal"><h2 class="text-sm font-bold uppercase tracking-widest text-light-text transition-colors hover:text-[color:var(--white-color)] mb-6">Skills</h2><ul class="flex flex-wrap gap-2">${portfolioData.skills.map(skill => createStyledPill(skill.name)).join('')}</ul></div>`;
+        document.getElementById('skills').innerHTML = skillsHTML;
+        document.getElementById('contact').innerHTML = `<div class="reveal"><h2 class="text-lg text-primary-color mb-6">${portfolioData.contact.callToAction}</h2><h3 class="text-5xl text-[color:var(--white-color)] font-bold mb-6">${portfolioData.contact.title}</h3><p class="max-w-xl mx-auto text-dark-text mb-10">${portfolioData.contact.description}</p><a href="mailto:${portfolioData.contact.email}" class="mx-auto font-sans font-bold text-primary-color border border-primary-color rounded py-3 px-6 transition-all duration-300 ease-in-out hover:bg-primary-color hover:text-[color:var(--white-color)] hover:scale-105">Say Hello</a></div>`;
+        document.getElementById('footer').innerHTML = `<p class="font-sans">Inspired by <a href="${portfolioData.footer.inspiredByUrl}" target="_blank" rel="noopener noreferrer" class="font-semibold text-slate hover:text-primary-color transition-colors">${portfolioData.footer.inspiredBy}</a>.</p><p class="font-sans">${portfolioData.footer.madeWith}</p>`;
+        let hasScrolled = false; const experienceSection = document.querySelector('#experience'); function handleFirstScroll(event) { if (window.scrollY < 10 && event.deltaY > 0) { event.preventDefault(); experienceSection.scrollIntoView({ behavior: 'smooth' }); window.removeEventListener('wheel', handleFirstScroll); } }
+        window.addEventListener('wheel', handleFirstScroll, { passive: false }); window.addEventListener('scroll', () => { if (window.scrollY > 10) { window.removeEventListener('wheel', handleFirstScroll); } });
+        document.addEventListener('mousemove', e => { document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`); document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`); });
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => { if(anchor.getAttribute('href') === '#') { anchor.addEventListener('click', e => e.preventDefault()); return; } anchor.addEventListener('click', function (e) { e.preventDefault(); const targetId = this.getAttribute('href'); const targetElement = document.querySelector(targetId); if (targetElement) { targetElement.scrollIntoView({ behavior: 'smooth' }); } }); });
+        const sections = portfolioData.sectionsForScrollspy.map(id => document.getElementById(id)); window.addEventListener('scroll', () => { let current = ''; sections.forEach(section => { const sectionTop = section.offsetTop; if (pageYOffset >= sectionTop - (window.innerHeight / 2)) { current = section.getAttribute('id'); } }); document.querySelectorAll('.nav-link').forEach(link => { link.classList.remove('active'); if (link.getAttribute('href') === `#${current}`) { link.classList.add('active'); } }); }, { passive: true });
+        const revealObserver = new IntersectionObserver((entries, observer) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.05 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    });
+    </script>
 </body>
 </html>
