@@ -64,13 +64,13 @@ const portfolioData = {
             duties: "Pursuing a comprehensive undergraduate degree with a focus on core business principles, including management, marketing, finance, and economics."
         },
         {
-            date: "Passed 2020",
+            date: "2020",
             title: "Plus Two in Science",
             institution: "Capital College and Research Center",
             duties: "Completed higher secondary education with a major in Biology, establishing a strong foundation in scientific principles and analytical thinking."
         },
         {
-            date: "Passed Year: 2018",
+            date: "2018",
             title: "SEE",
             institution: "Manakamana Secondary School",
             images: [
