@@ -73,9 +73,6 @@ const portfolioData = {
             date: "2018",
             title: "SEE",
             institution: "Manakamana Secondary School",
-            images: [
-                { src: "https://media.licdn.com/dms/image/D562DAQFZof44fAjEbA/profile-treasury-image-shrink_1280_1280/0/1743180705942", alt: "Jharana Magazine Covers" },
-            ],
             duties: "Led the revival of the school's discontinued yearbook, 'Jharana,' overseeing all aspects from design and content collection to final production. Also designed and developed the official school website using WordPress, enhancing skills in project management, graphic design, and web development."
         }
     ],
