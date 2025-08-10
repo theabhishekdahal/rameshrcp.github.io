@@ -34,7 +34,7 @@ const portfolioData = {
             title: "",
             institution: "Purbanchal Enterprises",
             duties: "Managed books for two VAT-registered shops, handled invoicing in Busy software. Uploaded monthly VAT returns to the IRD and conducted year-end external confirmations.",
-            skills: ["Busy 21", "VAT Returns", "Bookkeeping", "Client Communication","Exce"]
+            skills: ["Busy 21", "VAT Returns", "Bookkeeping", "Client Communication","Excel"]
         },
         {
             date: "2015 — 2021",
