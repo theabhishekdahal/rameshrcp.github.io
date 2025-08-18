@@ -4,7 +4,7 @@ const portfolioData = {
     bio: "Designing with purpose, calculating with precision.",
     about: [
         "My journey to Chartered Accountancy wasn't a lifelong dream; my passion was initially for animation and web development. After some unexpected detours and a nudge from my family, I found myself at a crossroads. I chose to pursue CA not from initial interest, but with a firm resolve to make the commitment <strong>truly worth my time</strong>.",
-        "That decision became my primary motivation. I tackled my studies with a new sense of purpose, and the dedication paid off when I ended up <strong>topping the CAP I exams</strong>. This achievement was a moment of deep personal validation and brought great joy to my family. Today, I'm a driven professional with a unique blend of technical insight, business acumen, and a powerful determination to succeed on my own terms.",
+        "That decision became my primary motivation. I tackled my studies with a new sense of purpose, and the dedication paid off when I ended up <strong>topping the CAP I & CAP II exams</strong>. This achievement was a moment of deep personal validation and brought great joy to my family. Today, I'm a driven professional with a unique blend of technical insight, business acumen, and a powerful determination to succeed on my own terms.",
         "When I'm not untangling financial statements, I'm usually conquering languages on Duolingo, absorbing book summaries on Blinkist, or geeking out over MasterClasses on everything from negotiation to the science of sleep. My path hasn't been a straight line, but I've found that's what makes the journey fulfilling."
     ],
     contact: {
@@ -55,7 +55,7 @@ const portfolioData = {
             date: "Ongoing",
             title: "Chartered Accountancy",
             institution: "Insitute of Chartered Accountants of Nepal",
-            duties: "Pursuing the professional CA qualification, focusing on advanced modules in financial reporting, auditing, and corporate law. Currently progressing through CAP-II."
+            duties: "Pursuing the professional CA qualification, focusing on advanced modules in financial reporting, auditing, and corporate law. Currently progressing through CAP-III."
         },
         {
             date: "Ongoing",
