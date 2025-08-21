@@ -30,6 +30,11 @@ const portfolioData = {
     ],
     experience: [
         {
+            date: "2025 — Present",
+            title: "",
+            institution: "S.A.R. Associates",
+        },
+        {
             date: "2019 — 2022",
             title: "",
             institution: "Purbanchal Enterprises",
